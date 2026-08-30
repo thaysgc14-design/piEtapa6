@@ -1,10 +1,10 @@
 package com.meuprojeto.aplicacaoweb.Classes;
 
-public class clienteService {
+public class ClienteService {
 
     public ClienteDAO clienteDao;
 
-    public clienteService() {
+    public ClienteService() {
         this.clienteDao = new ClienteDAO();
     }
 

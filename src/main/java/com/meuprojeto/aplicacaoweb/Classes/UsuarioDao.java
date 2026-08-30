@@ -12,75 +12,56 @@ import java.sql.SQLException;
  */
 public class UsuarioDao {
 
-    PreparedStatement st;
-    ResultSet rs;   
-    private Conexao conexao;
-    private Connection conn;
-
-    public UsuarioDao() {
-        this.conexao = new Conexao();
-        this.conn = this.conexao.getConexao();
-    }
-
     public int salvar(Usuario usuario) {
-        int status;
-        try {
-            st = conn.prepareStatement("INSERT INTO usuario  (nome, DataNas, funcao, login, senha) VALUES (?, ?, ?, ?, ?)");
+
+        String sql = "INSERT INTO usuario (nome, DataNas, funcao, login, senha) VALUES (?, ?, ?, ?, ?)";
+        int status = 0;
+        try (Connection con = new Conexao().getConexao(); PreparedStatement st = con.prepareStatement(sql)) {
+
             st.setString(1, usuario.getNomeUsu());
-            String dataMySQL = usuario.getDataNas().replaceAll("(\\d{2})/(\\d{2})/(\\d{4})", "$3-$2-$1");
-            st.setString(2, dataMySQL);
+            st.setString(2, usuario.getDataNas());
             st.setString(3, usuario.getFuncao());
             st.setString(4, usuario.getLogin());
-            st.setString(5, usuario.getSenha());
+            st.setString(5, usuario.getSenha());;
 
             status = st.executeUpdate();
-            return status;
-        } catch (SQLException ex) {
-            System.out.println("Erro ao conectar: " + ex.getMessage());
-            return ex.getErrorCode();
+
+        } catch (SQLException e) {
+            System.err.println("Erro DAO ao salvar usuário: " + e.getMessage());
+            throw new RuntimeException("Falha ao comunicar com o banco de dados durante o cadastro.", e);
+
         }
+        return status;
     }
 
-    public void fecharRecursos() {
-        try {
-            if (rs != null) {
-                rs.close();
-            }
-            if (st != null) {
-                st.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println("Erro ao fechar recursos: " + ex.getMessage());
-        }
-    }
-
-    
-public Usuario validarLogin(String login, String senha) {
-  
-          try {
+    public Usuario validarLogin(String login, String senha) {
         String sql = "SELECT * FROM usuario WHERE login = ? AND senha = ?";
-        st = conn.prepareStatement(sql);
-        st.setString(1, login);
-        st.setString(2, senha);
-        rs = st.executeQuery();
-        
-        if (rs.next()) {
-            Usuario usuario = new Usuario();
-            usuario.setNomeUsu(rs.getString("nome"));
-            usuario.setLogin(rs.getString("login"));
-            usuario.setSenha(rs.getString("senha"));
-            usuario.setFuncao(rs.getString("funcao"));
-            return usuario;
-        } else {
-            return null;
+        Usuario usuarioEncontrado = null;
+
+        try (Connection con = new Conexao().getConexao(); PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, login);
+            st.setString(2, senha);
+
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    // Se encontrou no banco, popula o objeto Usuário
+                    usuarioEncontrado = new Usuario();
+                    usuarioEncontrado.setNomeUsu(rs.getString("nome"));
+                    usuarioEncontrado.setDataNas(rs.getString("DataNas"));
+                    usuarioEncontrado.setFuncao(rs.getString("funcao"));
+                    usuarioEncontrado.setLogin(rs.getString("login"));
+                    usuarioEncontrado.setSenha(rs.getString("senha"));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro DAO ao validar login: " + e.getMessage());
+            throw new RuntimeException("Falha ao comunicar com o banco de dados durante o login.", e);
         }
-    } catch (SQLException ex) {
-        System.out.println("Erro ao verificar login: " + ex.getMessage());
-        return null;
-    } finally {
-        fecharRecursos(); 
+
+        return usuarioEncontrado;
     }
-}
+
 }
 
 
