@@ -19,7 +19,12 @@ public class UsuarioDao {
         try (Connection con = new Conexao().getConexao(); PreparedStatement st = con.prepareStatement(sql)) {
 
             st.setString(1, usuario.getNomeUsu());
-            st.setString(2, usuario.getDataNas());
+            String dataNas = usuario.getDataNas();
+            if (dataNas != null && dataNas.contains("/")) {
+                String[] partes = dataNas.split("/");
+                dataNas = partes[2] + "-" + partes[1] + "-" + partes[0];
+            }
+            st.setString(2, dataNas);
             st.setString(3, usuario.getFuncao());
             st.setString(4, usuario.getLogin());
             st.setString(5, usuario.getSenha());;
@@ -62,5 +67,3 @@ public class UsuarioDao {
         return usuarioEncontrado;
     }
 }
-
-
