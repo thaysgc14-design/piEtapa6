@@ -1,13 +1,38 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.meuprojeto.aplicacaoweb.Classes;
 
-/**
- *
- * @author thays
- */
 public class clienteService {
-    
+
+    public ClienteDAO clienteDao;
+
+    public clienteService() {
+        this.clienteDao = new ClienteDAO();
+    }
+
+    public void salvarCliente(Cliente cliente) throws IllegalArgumentException {
+
+        if (cliente.getNome() == null || cliente.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("Informe o nome do Cliente.");
+        }
+        String CPFC = cliente.getCPF().replaceAll("[^0-9]", "");
+        if (CPFC.length() != 11) {
+            throw new IllegalArgumentException("O CPF precisa ter exatos 11 dígitos.");
+
+        }
+        String cpfFormatado = CPFC.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
+        cliente.setCPF(cpfFormatado);
+        
+        if (cliente.getDataNasc() == null || cliente.getDataNasc().length() != 10) {
+            throw new IllegalArgumentException("A data precisa estar no formato dd/mm/aaaa.");
+        }
+        if (cliente.getTelefoneCli() == null || cliente.getTelefoneCli().trim().length() < 10) {
+            throw new IllegalArgumentException("O Telefone está inválido ou incompleto.");
+        }
+        int resultado = clienteDao.salvar(cliente);
+        
+        if (resultado == 0) {
+            throw new RuntimeException("Erro interno ao tentar salvar o cliente no banco de dados.");
+        }
+
+    }
+
 }
