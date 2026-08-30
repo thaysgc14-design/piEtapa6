@@ -1,5 +1,5 @@
 
-package Classes;
+package com.meuprojeto.aplicacaoweb.Classes;
 
 
 public class Usuario {

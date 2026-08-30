@@ -1,4 +1,4 @@
-package conexao;
+package com.meuprojeto.aplicacaoweb.conexao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,6 +1,6 @@
-package Classes;
+package com.meuprojeto.aplicacaoweb.Classes;
 
-import conexao.Conexao;
+import com.meuprojeto.aplicacaoweb.conexao.Conexao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
