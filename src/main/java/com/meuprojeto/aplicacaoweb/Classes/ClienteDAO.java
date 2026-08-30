@@ -5,19 +5,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteDAO {
 
-    private Connection conn;
-
-    public ClienteDAO() {
-        Conexao conect = new Conexao();
-        this.conn = conect.getConexao();
-    }
-
     public int salvar(Cliente cliente) {
+
         String sql = "INSERT INTO Cliente (nome, CPF, nascimento, telefone) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+
+        try (Connection con = new Conexao().getConexao(); PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, cliente.getNome());
             st.setString(2, cliente.getCPF());
             String dataNasc = cliente.getDataNasc();
@@ -34,14 +31,27 @@ public class ClienteDAO {
         }
     }
 
-    public ResultSet listarClientes() {
+    public List<Cliente> listarClientes() {
         String sql = "SELECT * FROM Cliente ORDER BY nome";
-        try {
-            PreparedStatement st = conn.prepareStatement(sql);
-            return st.executeQuery();
+        List<Cliente> lista = new ArrayList<>();
+
+        try (Connection con = new Conexao().getConexao(); PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+
+            while (rs.next()) {
+                Cliente c = new Cliente();
+                c.setNome(rs.getString("nome"));
+                c.setCPF(rs.getString("CPF"));
+                c.setDataNasc(rs.getString("nascimento"));
+                c.setTelefoneCli(rs.getString("telefone"));
+
+                lista.add(c);
+            }
+
         } catch (SQLException ex) {
-            System.out.println("Erro ao listar clientes: " + ex.getMessage());
-            return null;
+            System.err.println("Erro DAO ao listar clientes: " + ex.getMessage());
+            throw new RuntimeException("Falha ao buscar a lista de clientes no banco.", ex);
         }
+
+        return lista;
     }
 }

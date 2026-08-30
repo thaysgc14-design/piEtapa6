@@ -61,7 +61,6 @@ public class UsuarioDao {
 
         return usuarioEncontrado;
     }
-
 }
 
 

@@ -1,5 +1,7 @@
 package com.meuprojeto.aplicacaoweb.Classes;
 
+import java.util.List;
+
 public class ClienteService {
 
     public ClienteDAO clienteDao;
@@ -7,6 +9,9 @@ public class ClienteService {
     public ClienteService() {
         this.clienteDao = new ClienteDAO();
     }
+    public List<Cliente> buscarTodosClientes() {
+    return clienteDao.listarClientes();
+}
 
     public void salvarCliente(Cliente cliente) throws IllegalArgumentException {
 

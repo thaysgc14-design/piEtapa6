@@ -15,7 +15,7 @@ public class UsuarioService {
         if (usuario.getFuncao() == null || usuario.getFuncao().trim().isEmpty()) {
             throw new IllegalArgumentException("Informe a função do Usuário.");
         }
-        if (usuario.getLogin() == null || usuario.getFuncao().trim().isEmpty()) {
+        if (usuario.getLogin() == null || usuario.getLogin().trim().isEmpty()) {
             throw new IllegalArgumentException("Informe o login do Usuário.");
         }
         if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
